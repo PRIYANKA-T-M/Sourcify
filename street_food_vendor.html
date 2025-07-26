@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Street Food Vendor Dashboard - FoodChain Connect</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/dashboard.css" />
+  <link rel="stylesheet" href="styles/street-vendor.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container navbar-content">
+      <a href="#" class="navbar-brand" id="navbarBrandStreetVendor">
+        <i class="fas fa-store"></i> Street Vendor Dashboard
+      </a>
+      <div class="navbar-nav">
+        <div class="language-selector">
+          <button class="language-btn" id="languageBtn">
+            <i class="fas fa-globe"></i>
+            <span id="currentLang">English</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="language-dropdown" id="languageDropdown" style="display:none;">
+            <div class="language-option" data-lang="en">English</div>
+            <div class="language-option" data-lang="hi">हिंदी</div>
+            <div class="language-option" data-lang="ta">தமிழ்</div>
+          </div>
+        </div>
+        <a href="index.html" class="btn btn-primary" id="logoutBtnStreetVendor">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Image Slider -->
+    <div class="image-slider-container">
+      <div class="image-slider">
+        <div class="slide active">
+          <img
+            src="https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=1200&h=400&fit=crop"
+            alt="Street Food"
+          />
+          <div class="slide-content">
+            <h2 id="slide1TitleStreet">Fresh Ingredients for Your Street Food Business</h2>
+            <p id="slide1DescStreet">Connect with reliable suppliers in your area</p>
+          </div>
+        </div>
+        <div class="slide">
+          <img
+            src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=400&fit=crop"
+            alt="Raw Materials"
+          />
+          <div class="slide-content">
+            <h2 id="slide2TitleStreet">Quality Raw Materials</h2>
+            <p id="slide2DescStreet">Source the best ingredients for your customers</p>
+          </div>
+        </div>
+        <div class="slide">
+          <img
+            src="https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=1200&h=400&fit=crop"
+            alt="Transport"
+          />
+          <div class="slide-content">
+            <h2 id="slide3TitleStreet">Reliable Transport Services</h2>
+            <p id="slide3DescStreet">Get your supplies delivered on time</p>
+          </div>
+        </div>
+      </div>
+      <div class="slider-controls">
+        <button class="prev-btn"><i class="fas fa-chevron-left"></i></button>
+        <button class="next-btn"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      <div class="slider-dots">
+        <span class="dot active" data-slide="0"></span>
+        <span class="dot" data-slide="1"></span>
+        <span class="dot" data-slide="2"></span>
+      </div>
+    </div>
+
+    <!-- Location Range Selector -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title" id="serviceRangeTitle">
+          <i class="fas fa-map-marker-alt"></i> Select Your Service Range
+        </h3>
+      </div>
+      <div class="location-selector">
+        <div class="map-container">
+          <div id="map"></div>
+        </div>
+        <div class="range-controls">
+          <div class="form-group">
+            <label class="form-label" id="searchLocationLabel" for="locationSearch">Search Location</label>
+            <input
+              type="text"
+              class="form-control"
+              id="locationSearch"
+              data-translate-placeholder="searchLocationPlaceholder"
+              placeholder="Enter your location"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" id="serviceRangeLabel" for="rangeSlider">Service Range (km)</label>
+            <input type="range" id="rangeSlider" min="1" max="50" value="10" class="range-slider" />
+            <span class="range-value" id="rangeValue">10 km</span>
+          </div>
+          <button class="btn btn-street-vendor" id="saveRangeBtn">
+            <i class="fas fa-save"></i> Save Range
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Dashboard Content -->
+    <div class="row">
+      <!-- Raw Materials Section -->
+      <div class="col-8">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title" id="rawMaterialsTitleStreet">
+              <i class="fas fa-boxes"></i> Raw Materials
+            </h3>
+            <div class="header-actions">
+              <button class="btn btn-primary" id="filterBtnStreet">
+                <i class="fas fa-filter"></i> Filters
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter Panel -->
+          <div class="filter-panel" id="filterPanel">
+            <div class="row">
+              <div class="col-3">
+                <select class="form-control" id="categoryFilter">
+                  <option value="" id="allCategoriesOption">All Categories</option>
+                  <option value="vegetables" id="vegetablesOption">Vegetables</option>
+                  <option value="spices" id="spicesOption">Spices</option>
+                  <option value="grains" id="grainsOption">Grains</option>
+                  <option value="dairy" id="dairyOption">Dairy</option>
+                  <option value="meat" id="meatOption">Meat</option>
+                </select>
+              </div>
+              <div class="col-3">
+                <select class="form-control" id="priceFilter">
+                  <option value="" id="priceRangeOption">Price Range</option>
+                  <!-- You may add ids here also -->
+                </select>
+              </div>
+              <div class="col-3">
+                <select class="form-control" id="locationFilter">
+                  <option value="" id="allLocationsOption">All Locations</option>
+                  <option value="nearby" id="withinRangeOption">Within Range</option>
+                  <option value="city" id="sameCityOption">Same City</option>
+                </select>
+              </div>
+              <div class="col-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="searchFilter"
+                  data-translate-placeholder="searchProductsPlaceholder"
+                  placeholder="Search products..."
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Products Grid -->
+          <div class="products-grid" id="productsGrid"></div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-4">
+        <!-- Shopping Cart -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title" id="cartTitle">
+              <i class="fas fa-shopping-cart"></i> Cart
+              <span class="cart-count" id="cartCount">0</span>
+            </h3>
+          </div>
+          <div class="cart-items" id="cartItems">
+            <div class="empty-cart">
+              <i class="fas fa-shopping-cart"></i>
+              <p id="emptyCartText">Your cart is empty</p>
+            </div>
+          </div>
+          <div class="cart-total">
+            <div class="total-row">
+              <span id="totalLabel">Total:</span> ₹<span id="cartTotal">0</span>
+            </div>
+            <button class="btn btn-street-vendor btn-full" id="checkoutBtn" disabled>
+              <i class="fas fa-credit-card"></i> Checkout
+            </button>
+          </div>
+        </div>
+
+        <!-- Collaboration Section -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title" id="collaborationTitle">
+              <i class="fas fa-users"></i> Wholesale Collaboration
+            </h3>
+          </div>
+          <div class="collaboration-content">
+            <p id="collaborationText">Join with other vendors for bulk orders and better prices!</p>
+            <button class="btn btn-primary btn-full" id="joinCollaborationBtn">
+              <i class="fas fa-handshake"></i> Find Collaboration
+            </button>
+            <div class="active-collaborations" id="activeCollaborations"></div>
+          </div>
+        </div>
+
+        <!-- Order Tracking -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title" id="orderTrackingTitle">
+              <i class="fas fa-truck"></i> Order Tracking
+            </h3>
+          </div>
+          <div class="tracking-content" id="trackingContent">
+            <div class="no-orders">
+              <i class="fas fa-clipboard-list"></i>
+              <p id="noOrdersText">No active orders</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div class="modal" id="checkoutModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="checkoutModalTitle">Checkout</h3>
+        <button class="close-btn" id="closeCheckout">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="checkout-summary" id="checkoutSummary"></div>
+        <div class="payment-options">
+          <h4 id="paymentMethodTitle">Payment Method</h4>
+          <div class="payment-method">
+            <input type="radio" id="payNow" name="payment" value="pay-now" checked />
+            <label for="payNow" id="payNowLabel">Pay Now</label>
+          </div>
+          <div class="payment-method" id="buyNowPayLaterOption" style="display: none;">
+            <input type="radio" id="buyNowPayLater" name="payment" value="buy-now-pay-later" />
+            <label for="buyNowPayLater" id="buyNowPayLaterLabel">Buy Now, Pay Later (Regular Customers Only)</label>
+          </div>
+        </div>
+        <div class="transport-option">
+          <h4 id="transportServiceTitle">Transport Service</h4>
+          <div class="form-group">
+            <input type="checkbox" id="needTransport" />
+            <label for="needTransport" id="needTransportLabel">I need transport service</label>
+          </div>
+          <div class="transport-details" id="transportDetails" style="display: none">
+            <select class="form-control" id="transportService">
+              <option value="" id="selectTransportOption">Select Transport Service</option>
+              <!-- Transport options will be loaded here -->
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="cancelOrderBtn">Cancel</button>
+        <button class="btn btn-street-vendor" id="confirmOrderBtn">
+          <i class="fas fa-check"></i> Confirm Order
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="scripts/common.js"></script>
+  <script src="scripts/street-vendor.js"></script>
+  <script src="scripts/multilingual.js"></script>
+</body>
+</html>
